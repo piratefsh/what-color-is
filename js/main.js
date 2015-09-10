@@ -27,6 +27,12 @@ var totalAverageColor = {
 
 btnExecuteSearch.onclick = function(e){
     e.preventDefault();
+
+    // don't do anything on empty field
+    if(!searchTermField.value || searchTermField.value.length < 1){
+        return; 
+    }
+    
     //disable until search finished
     btnExecuteSearch.disabled = true;
     search();
@@ -59,6 +65,7 @@ function setAverageColor(){
 }
 
 function search(){
+
     isSameTerm = searchTermField.value == searchTerm;
 
     if(imageSearch.cursor && isSameTerm){
