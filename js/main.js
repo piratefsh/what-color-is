@@ -9,6 +9,7 @@ var resultsCount = document.getElementById('result-count');
 var colorContainer = document.getElementById('color-container');
 var colorCodeRGB = document.getElementById('color-code-rgb');
 var colorCodeHex = document.getElementById('color-code-hex');
+var colorResults = document.getElementById('color-results');
 
 var pageCounter = 0;
 var isSameTerm = false;
@@ -51,7 +52,10 @@ function setAverageColor(){
         colorContainer.style.color = 'white';
         searchTermField.style.borderColor = 'white';
     }
-    colorContainer.style.backgroundColor = rgbColor
+    colorContainer.style.backgroundColor = rgbColor;
+
+    //display result
+    colorResults.style.opacity = 1;
 }
 
 function search(){
@@ -196,5 +200,7 @@ function getAverageColor(context, w, h){
 
     return rgb;
 }
+
+colorResults.style.opacity = 0;
 
 google.setOnLoadCallback(onSearchAPILoad);

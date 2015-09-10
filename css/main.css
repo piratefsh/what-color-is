@@ -12,8 +12,9 @@ h1, h2, h3{
 }
 
 .jumbotron{
+    font-family: Oswald, sans-serif;
     background: white;
-    padding: 80px;
+    padding: 60px;
     text-align: center;
 }
 
@@ -47,8 +48,11 @@ body{
 #color-code-rgb, #color-code-hex{
     background-color: transparent;
     margin-right: 20px;
+    margin-left: 10px;
     width: 170px;
-    padding: 5px;
+    padding: 5px 10px;
+    border: none;
+    border: 2px solid rgba(255,255,255,0.5);
 }
 
 #btn-search:hover{
@@ -71,7 +75,9 @@ body{
 
 #search-results{
     text-align: center;
+    margin-top: 40px;
 }
+
 #search-results:after{
     content: '';
     display: block;
@@ -90,7 +96,6 @@ body{
     background-size: cover;
     background-position: center;
 }
-
 
 @media(max-width: 768px){
     .jumbotron{
