@@ -19,21 +19,20 @@ btnExecuteSearch.onclick = function(e){
 }
 
 function search(){
-
     isSameTerm = searchTermField.value == searchTerm;
 
-    if(imageSearch.cursor 
-        && isSameTerm){
+    if(imageSearch.cursor && isSameTerm){
         if(pageCounter >= imageSearch.cursor.pages.length){
             alert('hit google image search max');
         }
         else{
             pageCounter++;
-            imageSearch.gotoPage(4);
+            imageSearch.gotoPage(pageCounter);
         }
     }
     else{
         isSameTerm = false;
+
         // new search term, reset pages
         searchTerm = searchTermField.value;
         pageCounter = 0;
@@ -41,7 +40,7 @@ function search(){
         imageSearch.execute(searchTerm);
     }
 
-    return false;      
+    return false;
 }
 
 function onSearchAPILoad(){
@@ -63,6 +62,7 @@ function onSearchComplete(){
     for(var i = 0; i < results.length; i++){
         var r = results[i];
 
+        // create image objects and put them in divs
         var ic = document.createElement('div');
         var img = document.createElement('div');
         img.className += 'search-img';
@@ -71,14 +71,14 @@ function onSearchComplete(){
         ic.appendChild(img);
         resultsContainer.appendChild(ic);
     }
-
-    if(pageCounter < maxPages){
+    
+    // if has more pages, continue search
+    if(pageCounter < maxPages-1){
         search();
     }
     else{
         btnExecuteSearch.disabled = false;
     }
-
 }
 
 google.setOnLoadCallback(onSearchAPILoad);
