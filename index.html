@@ -31,16 +31,18 @@
           <h1>What is the color of</h1>
           <form class="form-inline" role="form">
             <div class="form-group form-group-lg">
-              <input id="search-term" type="text" placeholder="" class="form-control input-lg" value="danger">
+              <input id="search-term" type="text" placeholder="" class="form-control input-lg" value="puppies">
             </div>
-            <button type="submit" id="btn-search" class="btn btn-default btn-lg">?</button>
+            <button id="btn-search" disabled class="btn btn-default btn-lg">?</button>
           </form>
       </div>
     </div>
 
     <hr>
     <div class="container">
-      <h2>Search results</h2>
+    <h2>Search <span id="result-count"></span> results</h2>
+      <div id="search-results"></div>
+      <div id="google-branding"></div>
     </div>
 
 
@@ -53,7 +55,7 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="//localhost:9011/livereload.js"></script>
         <script src="js/vendor/bootstrap.min.js"></script>
-        <script src="https://www.google.com/jsapi" type="text/javascript">
+        <script src="https://www.google.com/jsapi" type="text/javascript"></script>
         <script src="js/main.js"></script>
     </body>
 </html>

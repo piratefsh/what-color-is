@@ -1,26 +1,84 @@
 google.load('search', '1');
 
-
 var imageSearch, searchTerm;
 
 var searchTermField = document.getElementById('search-term');
 var btnExecuteSearch = document.getElementById('btn-search');
-searchTermField.onclick = function(e){
-    imageSearch.execute(searchTerm);
+var resultsContainer = document.getElementById('search-results');
+var resultsCount = document.getElementById('result-count');
 
-       
+var pageCounter = 0;
+var isSameTerm = false;
+var maxPages = 8;
+
+btnExecuteSearch.onclick = function(e){
+    e.preventDefault();
+    //disable until search finished
+    btnExecuteSearch.disabled = true;
+    search();
+}
+
+function search(){
+
+    isSameTerm = searchTermField.value == searchTerm;
+
+    if(imageSearch.cursor 
+        && isSameTerm){
+        if(pageCounter >= imageSearch.cursor.pages.length){
+            alert('hit google image search max');
+        }
+        else{
+            pageCounter++;
+            imageSearch.gotoPage(4);
+        }
+    }
+    else{
+        isSameTerm = false;
+        // new search term, reset pages
+        searchTerm = searchTermField.value;
+        pageCounter = 0;
+        google.search.Search.getBranding('google-branding');
+        imageSearch.execute(searchTerm);
+    }
+
+    return false;      
 }
 
 function onSearchAPILoad(){
     // create image search
     imageSearch = new google.search.ImageSearch();
     imageSearch.setSearchCompleteCallback(this, onSearchComplete, null);
+    imageSearch.setResultSetSize(8);
     btnExecuteSearch.disabled = false;
 }
 
 function onSearchComplete(){
-    var results = imageSearch.results;
-    if(results){
-        console.log(results);
+    // empty results
+    if(!isSameTerm){
+        resultsContainer.innerHTML = "";
     }
+
+    var results = imageSearch.results;
+
+    for(var i = 0; i < results.length; i++){
+        var r = results[i];
+
+        var ic = document.createElement('div');
+        var img = document.createElement('div');
+        img.className += 'search-img';
+        img.style.backgroundImage =  'url('+ r.tbUrl + ')';
+        
+        ic.appendChild(img);
+        resultsContainer.appendChild(ic);
+    }
+
+    if(pageCounter < maxPages){
+        search();
+    }
+    else{
+        btnExecuteSearch.disabled = false;
+    }
+
 }
+
+google.setOnLoadCallback(onSearchAPILoad);

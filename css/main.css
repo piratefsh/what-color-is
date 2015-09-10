@@ -17,6 +17,15 @@ h1, h2, h3{
     text-align: center;
 }
 
+@media(max-width: 768px){
+    .jumbotron{
+        padding: 40px
+    }
+    h1 {
+        font-size: 4em;
+    }
+}
+
 .jumbotron form{
     margin-top: 40px;
 }
@@ -60,6 +69,16 @@ body{
     border-bottom: 5px solid #555;
 }
 
+.search-img{
+    width: 200px;
+    height: 200px;
+    border: 1px solid #eee;
+    float: left;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-size: cover;
+    background-position: center;
+}
 
 
 
