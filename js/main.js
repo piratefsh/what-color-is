@@ -15,7 +15,7 @@ var pageCounter = 0;
 var isSameTerm = false;
 var maxPages = 8;
 
-var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
+var UPLOAD_SERVER_URL = 'http://45.55.61.164:5000/upload/url';
 var REQ_FINISHED = 4;
 
 var totalAverageColor = {
