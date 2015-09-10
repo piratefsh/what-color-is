@@ -17,15 +17,6 @@ h1, h2, h3{
     text-align: center;
 }
 
-@media(max-width: 768px){
-    .jumbotron{
-        padding: 40px
-    }
-    h1 {
-        font-size: 4em;
-    }
-}
-
 .jumbotron form{
     margin-top: 40px;
 }
@@ -69,17 +60,47 @@ body{
     border-bottom: 5px solid #555;
 }
 
+#search-results{
+    text-align: center;
+}
+#search-results:after{
+    content: '';
+    display: block;
+    clear: both;
+}
+.search-img-container{
+    display: inline-block;
+}
 .search-img{
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     border: 1px solid #eee;
-    float: left;
+    display: inline-block;
     margin-right: 20px;
     margin-bottom: 20px;
     background-size: cover;
     background-position: center;
 }
 
+
+@media(max-width: 768px){
+    .jumbotron{
+        padding: 20px;
+    }
+    .jumbotron form{
+        margin-top: 20px;
+    }
+    h1 {
+        font-size: 3em;
+    }
+    #btn-search, #search-term{
+        font-size: 1.5em;
+    }
+    .search-img{
+        width: 70px;
+        height: 70px;
+    }
+}
 
 
 

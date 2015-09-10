@@ -49,6 +49,9 @@ function onSearchAPILoad(){
     imageSearch.setSearchCompleteCallback(this, onSearchComplete, null);
     imageSearch.setResultSetSize(8);
     btnExecuteSearch.disabled = false;
+
+    // trigger first click
+    btnExecuteSearch.click();
 }
 
 function onSearchComplete(){
@@ -65,11 +68,15 @@ function onSearchComplete(){
         // create image objects and put them in divs
         var ic = document.createElement('div');
         var img = document.createElement('div');
+        ic.className += 'search-img-container';
         img.className += 'search-img';
         img.style.backgroundImage =  'url('+ r.tbUrl + ')';
         
         ic.appendChild(img);
         resultsContainer.appendChild(ic);
+
+        // get info about image color
+        inspectImg(r.tbUrl);
     }
     
     // if has more pages, continue search
@@ -79,6 +86,16 @@ function onSearchComplete(){
     else{
         btnExecuteSearch.disabled = false;
     }
+}
+
+function inspectImg(url){
+    var img = new Image();
+    img.src = url;
+    img.onload = getImageInfo;
+}
+
+function getImageInfo(){
+
 }
 
 google.setOnLoadCallback(onSearchAPILoad);
