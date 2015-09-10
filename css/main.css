@@ -97,6 +97,17 @@ body{
     background-position: center;
 }
 
+.fixed-bottom{
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    padding-top: 10px;
+}
+
+footer{
+    background-color: rgba(255,255,255,0.9);
+}
+
 @media(max-width: 768px){
     .jumbotron{
         padding: 20px;
