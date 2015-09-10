@@ -92,10 +92,47 @@ function inspectImg(url){
     var img = new Image();
     img.src = url;
     img.onload = getImageInfo;
+    img.crossOrigin = '';
 }
 
 function getImageInfo(){
+    var img = this;
 
+    //create shadow canvas
+    var canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+
+    var context = canvas.getContext('2d');
+    context.drawImage(img, 0, 0);
+
+    var averageColor = getAverageColor(context, canvas.width, canvas.height);
+    console.log(averageColor);
+}
+
+function getAverageColor(context, w, h){
+    //get pixel data 
+    var pixelData = context.getImageData(0, 0, w, h);
+
+    // counter
+    var rgb = {
+        r: 0,
+        g: 0,
+        b: 0
+    }
+
+    for(var i = 0; i < pixelData.length; i+=4){
+        rgb.r += pixelData[i+0];
+        rgb.g += pixelData[i+1];
+        rgb.b += pixelData[i+2];
+    }
+
+    var numPixels = pixelData.length/4;
+    rgb.r = Math.floor(rgb.r / numPixels);
+    rgb.g = Math.floor(rgb.g / numPixels);
+    rgb.b = Math.floor(rgb.b / numPixels);
+
+    return rgb;
 }
 
 google.setOnLoadCallback(onSearchAPILoad);
