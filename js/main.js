@@ -6,16 +6,52 @@ var searchTermField = document.getElementById('search-term');
 var btnExecuteSearch = document.getElementById('btn-search');
 var resultsContainer = document.getElementById('search-results');
 var resultsCount = document.getElementById('result-count');
+var colorContainer = document.getElementById('color-container');
+var colorCodeRGB = document.getElementById('color-code-rgb');
+var colorCodeHex = document.getElementById('color-code-hex');
 
 var pageCounter = 0;
 var isSameTerm = false;
 var maxPages = 8;
+
+var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
+var REQ_FINISHED = 4;
+
+var totalAverageColor = {
+    r: 0,
+    g: 0,
+    b: 0,
+    count: 0
+}
 
 btnExecuteSearch.onclick = function(e){
     e.preventDefault();
     //disable until search finished
     btnExecuteSearch.disabled = true;
     search();
+}
+
+function toHex(c){
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+
+function setAverageColor(){
+    var R, G, B;
+    var count = totalAverageColor.count;
+    R = Math.floor(totalAverageColor.r/count);
+    G = Math.floor(totalAverageColor.g/count);
+    B = Math.floor(totalAverageColor.b/count);
+    var rgbColor = 'rgb(' + R + "," + G + "," + B + ")";
+    colorCodeRGB.value = rgbColor;
+    colorCodeHex.value = '#' + toHex(R) + toHex(G) +  toHex(B);
+    
+    if((R+G+B)/3 < 160){
+        colorContainer.style.color = 'white';
+        searchTermField.style.borderColor = 'white';
+    }
+    colorContainer.style.backgroundColor = rgbColor
 }
 
 function search(){
@@ -38,6 +74,7 @@ function search(){
         pageCounter = 0;
         google.search.Search.getBranding('google-branding');
         imageSearch.execute(searchTerm);
+        totalAverageColor = {r: 0, g: 0, b: 0, count: 0}
     }
 
     return false;
@@ -89,10 +126,29 @@ function onSearchComplete(){
 }
 
 function inspectImg(url){
-    var img = new Image();
-    img.src = url;
-    img.onload = getImageInfo;
-    img.crossOrigin = '';
+
+    // post image url to server
+    var req = new XMLHttpRequest();
+
+
+    // get image on CORS-friendly server
+    req.onreadystatechange = function(){
+        if(req.readyState == REQ_FINISHED && req.responseText){
+            var response = JSON.parse(req.responseText);
+            var img = new Image();
+
+            // load image and get its info
+            img.onload = getImageInfo;
+            img.crossOrigin = 'Anonymous';
+            img.src = response.new_url;
+        }
+    }
+
+    var params = 'url=' + url
+    req.open('POST', UPLOAD_SERVER_URL);
+    req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    req.send(params);
+
 }
 
 function getImageInfo(){
@@ -107,12 +163,18 @@ function getImageInfo(){
     context.drawImage(img, 0, 0);
 
     var averageColor = getAverageColor(context, canvas.width, canvas.height);
-    console.log(averageColor);
+    
+    totalAverageColor.r += averageColor.r
+    totalAverageColor.g += averageColor.g
+    totalAverageColor.b += averageColor.b
+    totalAverageColor.count++;
+
+    setAverageColor()
 }
 
 function getAverageColor(context, w, h){
     //get pixel data 
-    var pixelData = context.getImageData(0, 0, w, h);
+    var pixelData = context.getImageData(0, 0, w, h).data;
 
     // counter
     var rgb = {
