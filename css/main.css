@@ -122,13 +122,33 @@ footer{
     #btn-search, #search-term{
         font-size: 1.5em;
     }
+    .jumbotron .form-group{
+        width: 70%;
+        display: inline-block;
+    }
     .search-img{
         width: 70px;
         height: 70px;
     }
+    #color-code-rgb, #color-code-hex{
+        width: 220px;
+        margin-bottom: 20px;
+    }
 }
 
+.glyphicon-spin {
+    -webkit-animation: spin 1000ms infinite linear;
+    animation: spin 1000ms infinite linear;
+}
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(359deg);
+    }
+}
 
 
 

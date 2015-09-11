@@ -1,3 +1,5 @@
+"use strict"
+
 google.load('search', '1');
 
 var imageSearch, searchTerm;
@@ -14,9 +16,11 @@ var colorResults = document.getElementById('color-results');
 var pageCounter = 0;
 var isSameTerm = false;
 var maxPages = 8;
+var timesSet = 0; //number of times average color set/image processed
 
 var UPLOAD_SERVER_URL = 'http://45.55.61.164:5000/upload/url';
 var REQ_FINISHED = 4;
+var MAX_IMAGES = 64;
 
 var totalAverageColor = {
     r: 0,
@@ -32,9 +36,10 @@ btnExecuteSearch.onclick = function(e){
     if(!searchTermField.value || searchTermField.value.length < 1){
         return; 
     }
-    
-    //disable until search finished
+
+    // disable button
     btnExecuteSearch.disabled = true;
+    btnExecuteSearch.innerHTML = '<i class="glyphicon glyphicon-repeat glyphicon-spin"></i>';
     search();
 }
 
@@ -45,6 +50,8 @@ function toHex(c){
 
 
 function setAverageColor(){
+    timesSet++;
+
     var R, G, B;
     var count = totalAverageColor.count;
     R = Math.floor(totalAverageColor.r/count);
@@ -62,6 +69,12 @@ function setAverageColor(){
 
     //display result
     colorResults.style.opacity = 1;
+
+    //disable until search finished
+    if(timesSet == MAX_IMAGES){
+        btnExecuteSearch.disabled = false;
+        btnExecuteSearch.innerHTML = '?';
+    }
 }
 
 function search(){
@@ -83,6 +96,7 @@ function search(){
         // new search term, reset pages
         searchTerm = searchTermField.value;
         pageCounter = 0;
+        timesSet = 0;
         google.search.Search.getBranding('google-branding');
         imageSearch.execute(searchTerm);
         totalAverageColor = {r: 0, g: 0, b: 0, count: 0}
@@ -130,9 +144,6 @@ function onSearchComplete(){
     // if has more pages, continue search
     if(pageCounter < maxPages-1){
         search();
-    }
-    else{
-        btnExecuteSearch.disabled = false;
     }
 }
 
