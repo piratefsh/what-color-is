@@ -12,6 +12,7 @@ var colorContainer = document.getElementById('color-container');
 var colorCodeRGB = document.getElementById('color-code-rgb');
 var colorCodeHex = document.getElementById('color-code-hex');
 var colorResults = document.getElementById('color-results');
+var allPaletteContainer = document.getElementById('all-palette-container');
 
 var pageCounter = 0;
 var isSameTerm = false;
@@ -22,13 +23,19 @@ var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
 var REQ_FINISHED = 4;
 var MAX_IMAGES = 64;
 var IMG_CLASS_PREFIX = 'i'; // because classnames cannot start with number
-
+var PALETTE_NUM_COLORS = 4;
+var ALL_PALETTE_NUM_COLORS = 4;
 var totalAverageColor = {
     r: 0,
     g: 0,
     b: 0,
     count: 0
 }
+
+var allPaletteColors = document.createElement('canvas');
+allPaletteColors.width = MAX_IMAGES;
+allPaletteColors.height = PALETTE_NUM_COLORS;
+var apcCount = 0;//current row being drawn
 
 btnExecuteSearch.onclick = function(e){
     e.preventDefault();
@@ -49,6 +56,10 @@ btnExecuteSearch.onclick = function(e){
 function toHex(c){
     var hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(rgb){
+    return '#' + toHex(rgb[0]) + toHex(rgb[1]) + toHex(rgb[2]);
 }
 
 function search(){
@@ -163,37 +174,91 @@ function getImageInfo(hashedUrl){
 
     var imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
-    var numColors = 4;
-
-    // get color palette with pixel-color-cruncher
+    // get color palette for an image with pixel-color-cruncher
     var pixelCruncher = new Worker('js/vendor/pixel-cruncher.js');
+
     pixelCruncher.addEventListener('message', function(e){
         var colors = e.data;
 
-        // display palette
-        // get container
-        var container = document.querySelector('.' + hashedUrl);
-        var containerWidth = container.getBoundingClientRect().width-2;
-        var colorSize = Math.floor(containerWidth/numColors) + 'px';
+        // display palette for each image
+
+        // get container. depending on whether this is fo the all colors, or individual image
+        // not very organized, but ok for now.
+        var container, containerWidth, colorHeight, colorWidth;
+
+        var isAllColors = apcCount == MAX_IMAGES
+        if(isAllColors){
+            container = allPaletteContainer;
+            container.innerHTML = "";
+            var dimensions = container.getBoundingClientRect();
+            containerWidth = dimensions.width-2;
+            colorWidth = 100/ALL_PALETTE_NUM_COLORS + '%';//Math.floor(containerWidth/ALL_PALETTE_NUM_COLORS) + 'px';
+            colorHeight = dimensions.height + 'px';
+
+            // done pixel crunching for all, so can reenable button
+            enableButton();
+
+            //reset
+            apcCount = 0;
+        }
+        else{
+            container = document.querySelector('.' + hashedUrl);
+            containerWidth = container.getBoundingClientRect().width-2;
+            colorHeight = colorWidth = Math.floor(containerWidth/PALETTE_NUM_COLORS) + 'px';
+        }
+
         // add small palette
         if(container != null){
             for(var i = 0; i < colors.length; i++){
                 var rgb = colors[i];
-                var c = document.createElement('div');
-                c.className += 'palette-color'
-                c.style.width = colorSize;
-                c.style.height = colorSize;
-                c.style.backgroundColor = 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
-                container.appendChild(c);
-            }
 
+                // create color square and add to container
+                var rgbStr = rgbToString(rgb); 
+                
+                if(isAllColors){
+                    var c = document.createElement('div');
+                    c.className += 'palette-color'
+                    c.style.width = colorWidth; 
+                    c.style.height = colorHeight;
+                    container.appendChild(c);
+                    setTimeoutForColor(c, rgbStr, i);
+                }
+
+                //save each color on main palette for crunching later
+                var apcContext = allPaletteColors.getContext('2d');
+                apcContext.fillStyle = rgbStr;
+                apcContext.fillRect(apcCount, i, 1, 1);
+
+            }
+            apcCount++;
+            if(apcCount == MAX_IMAGES){
+                //if got palette for all images, get palette of collective pallete so far
+                var apcImageData = apcContext.getImageData(0, 0, allPaletteColors.width, allPaletteColors.height).data;
+                pixelCruncher.postMessage({pixels: apcImageData, num_colors: ALL_PALETTE_NUM_COLORS});
+            }
         }
     });
 
-    pixelCruncher.postMessage({pixels: imageData, num_colors: numColors});
+    pixelCruncher.postMessage({pixels: imageData, num_colors: PALETTE_NUM_COLORS});
 
 }
 
+function setTimeoutForColor(elem, color, i){
+    setTimeout(function(){
+        elem.style.backgroundColor = color;
+    }, 100*i);
+}
+
+function enableButton(){
+    btnExecuteSearch.disabled = false;
+    btnExecuteSearch.innerHTML = '?';
+    colorContainer.style.color = 'white';
+    searchTermField.style.borderColor = 'white';
+}   
+
+function rgbToString(rgb){
+    return 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
+}
 
 
 // hide results
