@@ -36,6 +36,7 @@ var allPaletteColors = document.createElement('canvas');
 allPaletteColors.width = MAX_IMAGES;
 allPaletteColors.height = PALETTE_NUM_COLORS;
 var apcCount = 0;//current row being drawn
+var apcContext = allPaletteColors.getContext('2d');
 
 btnExecuteSearch.onclick = function(e){
     e.preventDefault();
@@ -186,7 +187,8 @@ function getImageInfo(hashedUrl){
         // not very organized, but ok for now.
         var container, containerWidth, colorHeight, colorWidth;
 
-        var isAllColors = apcCount == MAX_IMAGES
+        var isAllColors = (apcCount == MAX_IMAGES);
+
         if(isAllColors){
             container = allPaletteContainer;
             container.innerHTML = "";
@@ -207,32 +209,32 @@ function getImageInfo(hashedUrl){
             colorHeight = colorWidth = Math.floor(containerWidth/PALETTE_NUM_COLORS) + 'px';
         }
 
-        // add small palette
+        // add  palette
         if(container != null){
             for(var i = 0; i < colors.length; i++){
                 var rgb = colors[i];
 
-                // create color square and add to container
+                // create color rectangle and add to container
                 var rgbStr = rgbToString(rgb); 
                 
+                // if this is for the main palette
                 if(isAllColors){
-                    var c = document.createElement('div');
-                    c.className += 'palette-color'
-                    c.style.width = colorWidth; 
-                    c.style.height = colorHeight;
-                    container.appendChild(c);
-                    setTimeoutForColor(c, rgbStr, i);
+                    addColorToPalette(container, rgbStr, colorWidth, colorHeight, i);
                 }
 
-                //save each color on main palette for crunching later
-                var apcContext = allPaletteColors.getContext('2d');
-                apcContext.fillStyle = rgbStr;
-                apcContext.fillRect(apcCount, i, 1, 1);
+                // if still adding colors from each image
+                else{
+                    //save each color on all palette colors for crunching later
+                    apcContext.fillStyle = rgbStr;
+                    apcContext.fillRect(apcCount, i, 1, 1);
+                }
 
             }
+
             apcCount++;
+
+            //if got palette for all images, get palette of collective pallete so far
             if(apcCount == MAX_IMAGES){
-                //if got palette for all images, get palette of collective pallete so far
                 var apcImageData = apcContext.getImageData(0, 0, allPaletteColors.width, allPaletteColors.height).data;
                 pixelCruncher.postMessage({pixels: apcImageData, num_colors: ALL_PALETTE_NUM_COLORS});
             }
@@ -241,6 +243,15 @@ function getImageInfo(hashedUrl){
 
     pixelCruncher.postMessage({pixels: imageData, num_colors: PALETTE_NUM_COLORS});
 
+}
+
+function addColorToPalette(container, rgbStr, w, h, i){
+    var c = document.createElement('div');
+    c.className += 'palette-color'
+    c.style.width = w; 
+    c.style.height = h;
+    container.appendChild(c);
+    setTimeoutForColor(c, rgbStr, i);
 }
 
 function setTimeoutForColor(elem, color, i){
