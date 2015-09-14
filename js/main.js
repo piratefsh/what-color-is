@@ -102,11 +102,13 @@ function onSearchComplete(){
         // create image objects and put them in divs
         var ic = document.createElement('div');
         var img = document.createElement('div');
-        ic.className += 'search-img-container';
-        img.className += 'search-img';
+        ic.className    += 'search-img-container ';
+        img.className   += 'search-img ';
+        img.className   += md5(r.tbUrl);
         img.style.backgroundImage =  'url('+ r.tbUrl + ')';
         
         ic.appendChild(img);
+        console.log(img)
         resultsContainer.appendChild(ic);
 
         // get info about image color
@@ -123,7 +125,6 @@ function inspectImg(url){
 
     // post image url to server
     var req = new XMLHttpRequest();
-
 
     // get image on CORS-friendly server
     req.onreadystatechange = function(){
@@ -157,68 +158,20 @@ function getImageInfo(){
     var context = canvas.getContext('2d');
     context.drawImage(img, 0, 0);
 
-    var averageColor = getAverageColor(context, canvas.width, canvas.height);
-    
-    totalAverageColor.r += averageColor.r
-    totalAverageColor.g += averageColor.g
-    totalAverageColor.b += averageColor.b
-    totalAverageColor.count++;
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
-    setAverageColor()
+    // get color palette with pixel-color-cruncher
+    var pixelCruncher = new Worker('js/vendor/pixel-cruncher.js');
+    pixelCruncher.addEventListener('message', function(e){
+        var colors = e.data;
+
+        // display palette
+    });
+
+    pixelCruncher.postMessage({pixels: imageData, num_colors: 4});
+
 }
 
-function getAverageColor(context, w, h){
-    //get pixel data 
-    var pixelData = context.getImageData(0, 0, w, h).data;
-
-    // counter
-    var rgb = {
-        r: 0,
-        g: 0,
-        b: 0
-    }
-
-    for(var i = 0; i < pixelData.length; i+=4){
-        rgb.r += pixelData[i+0];
-        rgb.g += pixelData[i+1];
-        rgb.b += pixelData[i+2];
-    }
-
-    var numPixels = pixelData.length/4;
-    rgb.r = Math.floor(rgb.r / numPixels);
-    rgb.g = Math.floor(rgb.g / numPixels);
-    rgb.b = Math.floor(rgb.b / numPixels);
-
-    return rgb;
-}
-
-function setAverageColor(){
-    timesSet++;
-
-    var R, G, B;
-    var count = totalAverageColor.count;
-    R = Math.floor(totalAverageColor.r/count);
-    G = Math.floor(totalAverageColor.g/count);
-    B = Math.floor(totalAverageColor.b/count);
-    var rgbColor = 'rgb(' + R + "," + G + "," + B + ")";
-    colorCodeRGB.value = rgbColor;
-    colorCodeHex.value = '#' + toHex(R) + toHex(G) +  toHex(B);
-    
-    if((R+G+B)/3 < 160){
-        colorContainer.style.color = 'white';
-        searchTermField.style.borderColor = 'white';
-    }
-    colorContainer.style.backgroundColor = rgbColor;
-
-    //display result
-    colorResults.style.opacity = 1;
-
-    //disable until search finished
-    if(timesSet == MAX_IMAGES){
-        btnExecuteSearch.disabled = false;
-        btnExecuteSearch.innerHTML = '?';
-    }
-}
 
 
 // hide results
