@@ -1,7 +1,7 @@
 {
-  "name": "image-processing",
+  "name": "what-color-is",
   "version": "1.0.0",
-  "description": "Image Processing Experiments",
+  "description": "ever wonder what the average color of <thing> is?",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,5 +14,24 @@
     "grunt-serve": "^0.1.6"
   },
   "dependencies": {
-  }
+    "pixel-color-cruncher": "^1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/piratefsh/what-color-is.git"
+  },
+  "keywords": [
+    "what",
+    "color",
+    "is",
+    "this",
+    "image",
+    "processing",
+    "color",
+    "average"
+  ],
+  "bugs": {
+    "url": "https://github.com/piratefsh/what-color-is/issues"
+  },
+  "homepage": "https://github.com/piratefsh/what-color-is"
 }

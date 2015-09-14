@@ -18,7 +18,7 @@ var isSameTerm = false;
 var maxPages = 8;
 var timesSet = 0; //number of times average color set/image processed
 
-var UPLOAD_SERVER_URL = 'http://45.55.61.164:5000/upload/url';
+var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
 var REQ_FINISHED = 4;
 var MAX_IMAGES = 64;
 
@@ -40,6 +40,8 @@ btnExecuteSearch.onclick = function(e){
     // disable button
     btnExecuteSearch.disabled = true;
     btnExecuteSearch.innerHTML = '<i class="glyphicon glyphicon-repeat glyphicon-spin"></i>';
+    
+    // start search
     search();
 }
 
@@ -48,37 +50,7 @@ function toHex(c){
     return hex.length == 1 ? "0" + hex : hex;
 }
 
-
-function setAverageColor(){
-    timesSet++;
-
-    var R, G, B;
-    var count = totalAverageColor.count;
-    R = Math.floor(totalAverageColor.r/count);
-    G = Math.floor(totalAverageColor.g/count);
-    B = Math.floor(totalAverageColor.b/count);
-    var rgbColor = 'rgb(' + R + "," + G + "," + B + ")";
-    colorCodeRGB.value = rgbColor;
-    colorCodeHex.value = '#' + toHex(R) + toHex(G) +  toHex(B);
-    
-    if((R+G+B)/3 < 160){
-        colorContainer.style.color = 'white';
-        searchTermField.style.borderColor = 'white';
-    }
-    colorContainer.style.backgroundColor = rgbColor;
-
-    //display result
-    colorResults.style.opacity = 1;
-
-    //disable until search finished
-    if(timesSet == MAX_IMAGES){
-        btnExecuteSearch.disabled = false;
-        btnExecuteSearch.innerHTML = '?';
-    }
-}
-
 function search(){
-
     isSameTerm = searchTermField.value == searchTerm;
 
     if(imageSearch.cursor && isSameTerm){
@@ -173,6 +145,7 @@ function inspectImg(url){
 
 }
 
+//get image color functions
 function getImageInfo(){
     var img = this;
 
@@ -219,6 +192,35 @@ function getAverageColor(context, w, h){
     return rgb;
 }
 
-colorResults.style.opacity = 0;
+function setAverageColor(){
+    timesSet++;
 
+    var R, G, B;
+    var count = totalAverageColor.count;
+    R = Math.floor(totalAverageColor.r/count);
+    G = Math.floor(totalAverageColor.g/count);
+    B = Math.floor(totalAverageColor.b/count);
+    var rgbColor = 'rgb(' + R + "," + G + "," + B + ")";
+    colorCodeRGB.value = rgbColor;
+    colorCodeHex.value = '#' + toHex(R) + toHex(G) +  toHex(B);
+    
+    if((R+G+B)/3 < 160){
+        colorContainer.style.color = 'white';
+        searchTermField.style.borderColor = 'white';
+    }
+    colorContainer.style.backgroundColor = rgbColor;
+
+    //display result
+    colorResults.style.opacity = 1;
+
+    //disable until search finished
+    if(timesSet == MAX_IMAGES){
+        btnExecuteSearch.disabled = false;
+        btnExecuteSearch.innerHTML = '?';
+    }
+}
+
+
+// hide results
+colorResults.style.opacity = 0;
 google.setOnLoadCallback(onSearchAPILoad);
