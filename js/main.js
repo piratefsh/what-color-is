@@ -19,7 +19,7 @@ var isSameTerm = false;
 var maxPages = 8;
 var timesSet = 0; //number of times average color set/image processed
 
-var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
+var UPLOAD_SERVER_URL = 'http://45.55.61.164:5000/upload/url';
 var REQ_FINISHED = 4;
 var MAX_IMAGES = 64;
 var IMG_CLASS_PREFIX = 'i'; // because classnames cannot start with number
@@ -202,6 +202,9 @@ function getImageInfo(hashedUrl){
 
             //reset
             apcCount = 0;
+            colorCodeRGB.value = colorCodeHex.value = "";
+            colorResults.style.opacity = 1;
+
         }
         else{
             container = document.querySelector('.' + hashedUrl);
@@ -216,9 +219,12 @@ function getImageInfo(hashedUrl){
 
                 // create color rectangle and add to container
                 var rgbStr = rgbToString(rgb); 
+                var hexStr = rgbToHex(rgb); 
                 
                 // if this is for the main palette
                 if(isAllColors){
+                    colorCodeRGB.value += i == 0 ? rgbStr : ", " + rgbStr
+                    colorCodeHex.value += i == 0 ? hexStr : ", " + hexStr
                     addColorToPalette(container, rgbStr, colorWidth, colorHeight, i);
                 }
 
