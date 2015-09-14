@@ -86,14 +86,15 @@ body{
 }
 .search-img-container{
     display: inline-block;
+    width: 150px;
+    margin-bottom: 20px;
+    margin-right: 20px;
 }
 .search-img{
     width: 150px;
     height: 150px;
     border: 1px solid #eee;
     display: inline-block;
-    margin-right: 20px;
-    margin-bottom: 20px;
     background-size: cover;
     background-position: center;
 }
@@ -136,6 +137,9 @@ footer{
     }
 }
 
+.palette-color{
+    display: inline-block;
+}
 .glyphicon-spin {
     -webkit-animation: spin 1000ms infinite linear;
     animation: spin 1000ms infinite linear;

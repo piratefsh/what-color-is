@@ -21,6 +21,7 @@ var timesSet = 0; //number of times average color set/image processed
 var UPLOAD_SERVER_URL = 'http://127.0.0.1:5000/upload/url';
 var REQ_FINISHED = 4;
 var MAX_IMAGES = 64;
+var IMG_CLASS_PREFIX = 'i'; // because classnames cannot start with number
 
 var totalAverageColor = {
     r: 0,
@@ -103,12 +104,11 @@ function onSearchComplete(){
         var ic = document.createElement('div');
         var img = document.createElement('div');
         ic.className    += 'search-img-container ';
+        ic.className    += IMG_CLASS_PREFIX + md5(r.tbUrl);
         img.className   += 'search-img ';
-        img.className   += md5(r.tbUrl);
         img.style.backgroundImage =  'url('+ r.tbUrl + ')';
         
         ic.appendChild(img);
-        console.log(img)
         resultsContainer.appendChild(ic);
 
         // get info about image color
@@ -133,7 +133,10 @@ function inspectImg(url){
             var img = new Image();
 
             // load image and get its info
-            img.onload = getImageInfo;
+            img.onload = function(e){
+                var hashedUrl = md5(url);
+                getImageInfo.bind(this)(IMG_CLASS_PREFIX + hashedUrl)
+            };
             img.crossOrigin = 'Anonymous';
             img.src = response.new_url;
         }
@@ -146,8 +149,8 @@ function inspectImg(url){
 
 }
 
-//get image color functions
-function getImageInfo(){
+//get image color functions given hashed original image url
+function getImageInfo(hashedUrl){
     var img = this;
 
     //create shadow canvas
@@ -160,15 +163,34 @@ function getImageInfo(){
 
     var imageData = context.getImageData(0, 0, canvas.width, canvas.height).data;
 
+    var numColors = 4;
+
     // get color palette with pixel-color-cruncher
     var pixelCruncher = new Worker('js/vendor/pixel-cruncher.js');
     pixelCruncher.addEventListener('message', function(e){
         var colors = e.data;
 
         // display palette
+        // get container
+        var container = document.querySelector('.' + hashedUrl);
+        var containerWidth = container.getBoundingClientRect().width-2;
+        var colorSize = Math.floor(containerWidth/numColors) + 'px';
+        // add small palette
+        if(container != null){
+            for(var i = 0; i < colors.length; i++){
+                var rgb = colors[i];
+                var c = document.createElement('div');
+                c.className += 'palette-color'
+                c.style.width = colorSize;
+                c.style.height = colorSize;
+                c.style.backgroundColor = 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
+                container.appendChild(c);
+            }
+
+        }
     });
 
-    pixelCruncher.postMessage({pixels: imageData, num_colors: 4});
+    pixelCruncher.postMessage({pixels: imageData, num_colors: numColors});
 
 }
 
