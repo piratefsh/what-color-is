@@ -195,7 +195,7 @@ function getImageInfo(hashedUrl){
             var dimensions = container.getBoundingClientRect();
             containerWidth = dimensions.width-2;
             colorWidth = 100/ALL_PALETTE_NUM_COLORS + '%';//Math.floor(containerWidth/ALL_PALETTE_NUM_COLORS) + 'px';
-            colorHeight = dimensions.height + 'px';
+            colorHeight = '100%';
 
             // done pixel crunching for all, so can reenable button
             enableButton();
