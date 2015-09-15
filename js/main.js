@@ -52,6 +52,9 @@ btnExecuteSearch.onclick = function(e){
     
     // start search
     search();
+
+    // update params
+    window.location.hash = '#' + searchTermField.value.split(' ').join('+')
 }
 
 function toHex(c){
@@ -99,6 +102,15 @@ function onSearchAPILoad(){
 
     // trigger first click
     btnExecuteSearch.click();
+}
+
+function getSearchParams(){
+    var query = window.location.hash;
+    var parts = query.substr(1).split('+');
+    if(parts && parts.length > 0){
+        return parts.join(' ');
+    }
+    return false;
 }
 
 function onSearchComplete(){
@@ -277,6 +289,11 @@ function rgbToString(rgb){
     return 'rgb(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ')';
 }
 
+// populate query terms
+var query = getSearchParams();
+if(query){
+    searchTermField.value = query;
+}
 
 // hide results
 colorResults.style.opacity = 0;
