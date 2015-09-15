@@ -54,7 +54,7 @@ btnExecuteSearch.onclick = function(e){
     search();
 
     // update params
-    window.location.hash = '#' + searchTermField.value.split(' ').join('+')
+    window.location.hash = '#' + encodeURIComponent(searchTermField.value);
 }
 
 function toHex(c){
@@ -87,7 +87,6 @@ function search(){
         timesSet = 0;
         google.search.Search.getBranding('google-branding');
         imageSearch.execute(searchTerm);
-        totalAverageColor = {r: 0, g: 0, b: 0, count: 0}
     }
 
     return false;
@@ -105,10 +104,10 @@ function onSearchAPILoad(){
 }
 
 function getSearchParams(){
-    var query = window.location.hash;
-    var parts = query.substr(1).split('+');
-    if(parts && parts.length > 0){
-        return parts.join(' ');
+    var query = decodeURIComponent(window.location.hash);
+    var parts = query.substr(1);
+    if(parts){
+        return parts;
     }
     return false;
 }
